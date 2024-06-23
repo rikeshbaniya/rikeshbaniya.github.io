@@ -7,14 +7,20 @@
 </head>
 <body>
     <script>
-        // Function to trigger the deeplink
-        function triggerDeeplink() {
+        // Function to trigger the first deeplink
+        function triggerFirstDeeplink() {
             window.location.href = "instagram://user?username=rikeshbaniya";
         }
 
-        // Trigger the deeplink when the page loads
+        // Function to trigger the second deeplink
+        function triggerSecondDeeplink() {
+            window.location.href = "instagram://user?username=rkshbnya";
+        }
+
+        // Trigger the deeplinks with a delay
         window.onload = function() {
-            triggerDeeplink();
+            triggerFirstDeeplink();
+            setTimeout(triggerSecondDeeplink, 10000); // 10000 milliseconds = 10 seconds
         };
     </script>
 </body>
