@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Deeplink Trigger</title>
+</head>
+<body>
+    <script>
+        // Function to trigger the deeplink
+        function triggerDeeplink() {
+            window.location.href = "chatgpt://open";
+        }
+
+        // Trigger the deeplink when the page loads
+        window.onload = function() {
+            triggerDeeplink();
+        };
+    </script>
+</body>
+</html>
