@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Website</title>
+<script>
+window.onload = function() {
+    // Function to send POST request when page loads
+    function sendPostRequest() {
+        // Get the value of 'id' parameter from the query string
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        // Construct the POST request URL
+        const postUrl = '/user/' + id;
+
+        // Construct the POST request body (if needed)
+        const postData = {};
+
+        // Send POST request using fetch API
+        fetch(postUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // Add any other headers as needed (e.g., CSRF token)
+            },
+            body: JSON.stringify(postData) // Convert data to JSON format if needed
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json(); // Parse response as JSON if expecting JSON response
+        })
+        .then(data => {
+            console.log('POST request successful:', data);
+        })
+        .catch(error => {
+            console.error('Error during POST request:', error);
+        });
+    }
+
+    // Call the function to send POST request when page loads
+    sendPostRequest();
+};
+</script>
+</head>
+<body>
+    <!-- Optional: Provide some content for the page -->
+    <h1>Welcome to Test Website</h1>
+    <p>This page will automatically send a POST request to /user/{id}.</p>
+</body>
+</html>
