@@ -41,24 +41,30 @@
             margin: 10px 0;
             font-size: 1.2em;
         }
+        .product h4 {
+            margin: 10px 0;
+            font-size: 1em;
+            color: #555;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Product List</h1>
+        <h3>Product List</h3>
         <div id="product-list" class="product-list"></div>
     </div>
 
     <script>
+        // Function to fetch JSON data
         async function fetchProductData() {
             try {
                 const response = await fetch('data.json'); // Fetch data from data.json
-                const data = await response.json();
+                const jsonData = await response.json();
 
                 const productList = document.getElementById('product-list');
 
                 // Loop through the product array and display each product's information
-                data.pageProps.response.forEach(product => {
+                jsonData.pageProps.response.forEach(product => {
                     const productDiv = document.createElement('div');
                     productDiv.className = 'product';
 
@@ -68,8 +74,8 @@
                     productDiv.appendChild(productName);
 
                     // Add product sizes
-                    const productSizes = document.createElement('p');
-                    productSizes.textContent = `Available Sizes: ${product.sizes.join(', ')}`;
+                    const productSizes = document.createElement('h4');
+                    productSizes.textContent = `${product.sizes.join(', ')}`;
                     productDiv.appendChild(productSizes);
 
                     // Add only the first product image
@@ -86,7 +92,7 @@
             }
         }
 
-        // Fetch the product data when the page loads
+        // Fetch product data when the page loads
         fetchProductData();
     </script>
 </body>
