@@ -3,42 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details</title>
+    <title>Product Grid</title>
     <style>
-        .product-images img {
-            width: 200px;
-            margin: 10px;
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .product-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .product-card img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .product-name {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .product-sizes {
+            font-size: 0.9em;
+            color: #555;
         }
     </style>
 </head>
 <body>
-    <h1 id="product-name"></h1>
-    <div class="product-images" id="product-images"></div>
-    <p>Sizes available: <span id="product-sizes"></span></p>
+    <div class="product-grid" id="product-grid"></div>
 
     <script>
         // Fetch the product data from the API
         fetch('https://classique.blanxer.io/_next/data/HubKXDdyfpg_yZPM_AEm0/products.json')
             .then(response => response.json())
             .then(data => {
+                const productGrid = document.getElementById('product-grid');
+
                 // Extract necessary fields
                 const productName = data.name;
-                const productImages = data.image_urls;
-                const productSizes = data.sizes;
+                const productImage = data.image_urls[0]; // Use the first image URL
+                const productSizes = data.sizes.join(', ');
 
-                // Render product name
-                document.getElementById('product-name').textContent = productName;
+                // Create product card
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
 
-                // Render product images
-                const imagesContainer = document.getElementById('product-images');
-                productImages.forEach(url => {
-                    const imgElement = document.createElement('img');
-                    imgElement.src = url;
-                    imagesContainer.appendChild(imgElement);
-                });
+                productCard.innerHTML = `
+                    <img src="${productImage}" alt="${productName}">
+                    <div class="product-name">${productName}</div>
+                    <div class="product-sizes">Sizes available: ${productSizes}</div>
+                `;
 
-                // Render product sizes
-                document.getElementById('product-sizes').textContent = productSizes.join(', ');
+                // Append product card to the grid
+                productGrid.appendChild(productCard);
             })
             .catch(error => console.error('Error fetching data:', error));
     </script>
