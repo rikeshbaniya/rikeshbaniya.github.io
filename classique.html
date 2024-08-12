@@ -57,6 +57,17 @@
             productName.textContent = product.name;
             productDiv.appendChild(productName);
 
+            // Add product price
+            const productPrice = document.createElement('p');
+            productPrice.textContent = `Price: NPR ${product.price}`;
+            productDiv.appendChild(productPrice);
+
+            // Add compare at price if available
+            if (product.compare_at_price) {
+                const productComparePrice = document.createElement('p');
+                productComparePrice.textContent = `Compare at: NPR ${product.compare_at_price}`;
+                productDiv.appendChild(productComparePrice);
+            }
 
             // Add product sizes
             const productSizes = document.createElement('p');
