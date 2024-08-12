@@ -1,89 +1,50 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .product {
-            margin-bottom: 20px;
-        }
-        .product img {
-            max-width: 200px;
-            height: auto;
-        }
-    </style>
+    <title>Product Display</title>
 </head>
 <body>
-    <h1>Product List</h1>
-    <div id="product-list"></div>
+    <h1>Product Details</h1>
+    <div id="productContainer"></div>
 
     <script>
-        // Assuming this is the JSON data you received
-        const jsonData = {
-            "pageProps": {
-                "response": [
-                    {
-                        "name": "Vintage Real Madrid Teka Jersey",
-                        "slug": "vintage-real-madrid-teka-jersey",
-                        "price": 2900,
-                        "compare_at_price": 3400,
-                        "has_variants": true,
-                        "image_urls": [
-                            "https://cdn2.blanxer.com/uploads/66268cf8511e55796d53e57c/product_image-img_0391-9614.webp",
-                            "https://cdn2.blanxer.com/uploads/66268cf8511e55796d53e57c/product_image-img_1117-4643.webp",
-                            "https://cdn2.blanxer.com/uploads/66268cf8511e55796d53e57c/product_image-img_1112-4082.webp"
-                        ],
-                        "sizes": ["M", "L", "XL"],
-                        "categories": ["Real Madrid"]
-                    },
-                    // Add more products here as needed
-                ]
-            }
+        // Sample JSON data
+        const data = {
+            "_id": "6629f050511e55796d591cca",
+            "name": "Vintage Bayern Munchen 90s Jersey",
+            "image_urls": [
+                "https://cdn2.blanxer.com/uploads/66268cf8511e55796d53e57c/product_image-img_1127-5043.webp",
+                "https://cdn2.blanxer.com/uploads/66268cf8511e55796d53e57c/product_image-img_0422-1342.webp"
+            ],
+            "sizes": ["M", "L"]
         };
 
-        const productList = document.getElementById('product-list');
-
-        // Loop through the product array and display each product's information
-        jsonData.pageProps.response.forEach(product => {
-            const productDiv = document.createElement('div');
-            productDiv.className = 'product';
-
-            // Add product name
+        // Function to display the product details
+        function displayProduct(product) {
+            const productContainer = document.getElementById('productContainer');
             const productName = document.createElement('h2');
             productName.textContent = product.name;
-            productDiv.appendChild(productName);
 
-            // Add product price
-            const productPrice = document.createElement('p');
-            productPrice.textContent = `Price: NPR ${product.price}`;
-            productDiv.appendChild(productPrice);
+            const productImage = document.createElement('img');
+            productImage.src = product.image_urls[0]; // Display the first image
 
-            // Add compare at price if available
-            if (product.compare_at_price) {
-                const productComparePrice = document.createElement('p');
-                productComparePrice.textContent = `Compare at: NPR ${product.compare_at_price}`;
-                productDiv.appendChild(productComparePrice);
-            }
-
-            // Add product sizes
-            const productSizes = document.createElement('p');
-            productSizes.textContent = `Available Sizes: ${product.sizes.join(', ')}`;
-            productDiv.appendChild(productSizes);
-
-            // Add product images
-            product.image_urls.forEach(url => {
-                const img = document.createElement('img');
-                img.src = url;
-                productDiv.appendChild(img);
+            const productSizes = document.createElement('ul');
+            product.sizes.forEach(size => {
+                const sizeItem = document.createElement('li');
+                sizeItem.textContent = size;
+                productSizes.appendChild(sizeItem);
             });
 
-            productList.appendChild(productDiv);
-        });
+            // Append elements to the container
+            productContainer.appendChild(productName);
+            productContainer.appendChild(productImage);
+            productContainer.appendChild(productSizes);
+        }
+
+        // Load and display product data on page load
+        displayProduct(data);
     </script>
 </body>
 </html>
