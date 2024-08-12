@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <style>
+        .product-images img {
+            width: 200px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="product-name"></h1>
+    <div class="product-images" id="product-images"></div>
+    <p>Sizes available: <span id="product-sizes"></span></p>
+
+    <script>
+        // Fetch the product data from the API
+        fetch('https://classique.blanxer.io/_next/data/HubKXDdyfpg_yZPM_AEm0/products.json')
+            .then(response => response.json())
+            .then(data => {
+                // Extract necessary fields
+                const productName = data.name;
+                const productImages = data.image_urls;
+                const productSizes = data.sizes;
+
+                // Render product name
+                document.getElementById('product-name').textContent = productName;
+
+                // Render product images
+                const imagesContainer = document.getElementById('product-images');
+                productImages.forEach(url => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = url;
+                    imagesContainer.appendChild(imgElement);
+                });
+
+                // Render product sizes
+                document.getElementById('product-sizes').textContent = productSizes.join(', ');
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    </script>
+</body>
+</html>
