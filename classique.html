@@ -3,84 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Grid</title>
+    <title>Product Details</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f4f4f4;
         }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 20px;
+        .product {
+            margin-bottom: 20px;
         }
-
-        .product-card {
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            padding: 20px;
-        }
-
-        .product-card img {
-            width: 100%;
+        .product img {
+            max-width: 200px;
             height: auto;
-            object-fit: cover;
-            margin-bottom: 15px;
-            border-radius: 4px;
-        }
-
-        .product-name {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .product-sizes {
-            font-size: 0.9em;
-            color: #555;
         }
     </style>
 </head>
 <body>
-    <div class="product-grid" id="product-grid"></div>
+    <h1>Product List</h1>
+    <div id="product-list"></div>
 
     <script>
-        // Fetch the product data from the API
-        fetch('https://classique.blanxer.io/_next/data/HubKXDdyfpg_yZPM_AEm0/products.json')
-            .then(response => response.json())
-            .then(data => {
-                const productGrid = document.getElementById('product-grid');
+        // Assuming this is the JSON data you received
+        const jsonData = {
+            "pageProps": {
+                "response": [
+                    {
+                        "name": "Vintage Real Madrid Teka Jersey",
+                        "slug": "vintage-real-madrid-teka-jersey",
+                        "price": 2900,
+                        "compare_at_price": 3400,
+                        "has_variants": true,
+                        "image_urls": [
+                            "https://cdn2.blanxer.com/uploads/66268cf8511e55796d53e57c/product_image-img_0391-9614.webp",
+                            "https://cdn2.blanxer.com/uploads/66268cf8511e55796d53e57c/product_image-img_1117-4643.webp",
+                            "https://cdn2.blanxer.com/uploads/66268cf8511e55796d53e57c/product_image-img_1112-4082.webp"
+                        ],
+                        "sizes": ["M", "L", "XL"],
+                        "categories": ["Real Madrid"]
+                    },
+                    // Add more products here as needed
+                ]
+            }
+        };
 
-                // Extract necessary fields
-                const productName = data.name;
-                const productImage = data.image_urls[0]; // Use the first image URL
-                const productSizes = data.sizes.join(', ');
+        const productList = document.getElementById('product-list');
 
-                // Create product card
-                const productCard = document.createElement('div');
-                productCard.className = 'product-card';
+        // Loop through the product array and display each product's information
+        jsonData.pageProps.response.forEach(product => {
+            const productDiv = document.createElement('div');
+            productDiv.className = 'product';
 
-                productCard.innerHTML = `
-                    <img src="${productImage}" alt="${productName}">
-                    <div class="product-name">${productName}</div>
-                    <div class="product-sizes">Sizes available: ${productSizes}</div>
-                `;
+            // Add product name
+            const productName = document.createElement('h2');
+            productName.textContent = product.name;
+            productDiv.appendChild(productName);
 
-                // Append product card to the grid
-                productGrid.appendChild(productCard);
-            })
-            .catch(error => console.error('Error fetching data:', error));
+            // Add product price
+            const productPrice = document.createElement('p');
+            productPrice.textContent = `Price: NPR ${product.price}`;
+            productDiv.appendChild(productPrice);
+
+            // Add compare at price if available
+            if (product.compare_at_price) {
+                const productComparePrice = document.createElement('p');
+                productComparePrice.textContent = `Compare at: NPR ${product.compare_at_price}`;
+                productDiv.appendChild(productComparePrice);
+            }
+
+            // Add product sizes
+            const productSizes = document.createElement('p');
+            productSizes.textContent = `Available Sizes: ${product.sizes.join(', ')}`;
+            productDiv.appendChild(productSizes);
+
+            // Add product images
+            product.image_urls.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url;
+                productDiv.appendChild(img);
+            });
+
+            productList.appendChild(productDiv);
+        });
     </script>
 </body>
 </html>
