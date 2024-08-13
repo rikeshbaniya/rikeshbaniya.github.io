@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,30 +7,30 @@
     <script>
         function fetchApiData() {
             const slugs = [
-'vintage-real-madrid-teka-jersey',
-'real-madrid-rare-1999-blue-jersey',
-'man-united-vodafone-ronaldo-jersey',
-'manchester-united-black-jersey-0708',
-'ac-milan-200607-home-jersey',
-'ronaldo-bicycle-jersey',
-'real-madrid-1718-ucl-final-ronaldo-jersey',
-'manchester-united-19981999-full-sleeve',
-'brazil-2002-away-retro-jersey',
-'barca-2009-ucl-final-retro-jersey',
-'chelsea-2012-ucl-retro-jersey',
-'manchester-united-2008-final-jersey',
-'rare-arsenal-0506-jersey',
-'argentina-1994-away-retro-jersey',
-'manchester-city-1997-99-jersey',
-'ac-milan-0607',
-'fc-barcelona-100th-anniversary-jersey',
-'liverpool-away-9395-jersey',
-'vintage-fc-bayern-munchen-90s-opel-jersey',
-'liverpool-new-kit-2324',
-'manchester-united-black-vodafone-jersey'
+                'vintage-real-madrid-teka-jersey',
+                'real-madrid-rare-1999-blue-jersey',
+                'man-united-vodafone-ronaldo-jersey',
+                'manchester-united-black-jersey-0708',
+                'ac-milan-200607-home-jersey',
+                'ronaldo-bicycle-jersey',
+                'real-madrid-1718-ucl-final-ronaldo-jersey',
+                'manchester-united-19981999-full-sleeve',
+                'brazil-2002-away-retro-jersey',
+                'barca-2009-ucl-final-retro-jersey',
+                'chelsea-2012-ucl-retro-jersey',
+                'manchester-united-2008-final-jersey',
+                'rare-arsenal-0506-jersey',
+                'argentina-1994-away-retro-jersey',
+                'manchester-city-1997-99-jersey',
+                'ac-milan-0607',
+                'fc-barcelona-100th-anniversary-jersey',
+                'liverpool-away-9395-jersey',
+                'vintage-fc-bayern-munchen-90s-opel-jersey',
+                'liverpool-new-kit-2324',
+                'manchester-united-black-vodafone-jersey'
             ];
 
-            const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // CORS Anywhere proxy URL
+            const proxyUrl = 'https://corsproxy.io/?'; // CORS Anywhere proxy URL
 
             slugs.forEach(slug => {
                 const apiUrl = `https://classique.blanxer.io/_next/data/HubKXDdyfpg_yZPM_AEm0/product/${slug}.json`;
@@ -48,6 +47,7 @@
                         const title = data.pageProps.seo.title;
                         const image = data.pageProps.seo.image;
                         const variants = data.pageProps.res.variants;
+                        const price = variants[0].price; // Extract the price from the first variant
 
                         // Create and update HTML content dynamically
                         const container = document.createElement('div');
@@ -61,6 +61,11 @@
                         imageElement.src = image;
                         imageElement.alt = title;
                         container.appendChild(imageElement);
+
+                        const priceElement = document.createElement('p');
+                        priceElement.className = 'price';
+                        priceElement.textContent = `Price: Rs ${price}`;
+                        container.appendChild(priceElement);
                         
                         const sizeVariantsList = document.createElement('ul');
                         sizeVariantsList.className = 'size-variants';
@@ -122,6 +127,12 @@
         .product-card h2 {
             font-size: 1.2em;
             margin: 0 0 10px;
+        }
+        .product-card p.price {
+            font-size: 1.1em;
+            color: #333;
+            margin: 10px 0;
+            font-weight: bold;
         }
         .product-card ul.size-variants {
             list-style: none;
