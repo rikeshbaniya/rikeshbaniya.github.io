@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Data</title>
     <script>
-        function fetchApiData() {
+        async function fetchApiData() {
             const slugs = [
                 'vintage-real-madrid-teka-jersey',
                 'real-madrid-rare-1999-blue-jersey',
@@ -30,66 +30,69 @@
                 'manchester-united-black-vodafone-jersey'
             ];
 
-            const proxyUrl = 'https://corsproxy.io/?'; // CORS Anywhere proxy URL
+            const proxyUrl = 'https://corsproxy.io/?';
 
-            slugs.forEach(slug => {
-                const apiUrl = `https://classique.blanxer.io/_next/data/HubKXDdyfpg_yZPM_AEm0/product/${slug}.json`;
+            for (const slug of slugs) {
+                try {
+                    const apiUrl = `https://classique.blanxer.io/_next/data/HubKXDdyfpg_yZPM_AEm0/product/${slug}.json`;
+                    const response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
+                    
+                    if (!response.ok) {
+                        console.error(`Error fetching data for ${slug}: ${response.statusText}`);
+                        continue;
+                    }
 
-                fetch(proxyUrl + apiUrl)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        // Extract and display the required information
-                        const title = data.pageProps.seo.title;
-                        const image = data.pageProps.seo.image;
-                        const variants = data.pageProps.res.variants;
-                        const price = variants[0].price; // Extract the price from the first variant
+                    const data = await response.json();
 
-                        // Create and update HTML content dynamically
-                        const container = document.createElement('div');
-                        container.className = 'product-card';
-                        
-                        const titleElement = document.createElement('h2');
-                        titleElement.textContent = title;
-                        container.appendChild(titleElement);
-                        
-                        const imageElement = document.createElement('img');
-                        imageElement.src = image;
-                        imageElement.alt = title;
-                        container.appendChild(imageElement);
+                    // Extract and display the required information
+                    const title = data.pageProps.seo.title;
+                    const image = data.pageProps.seo.image;
+                    const variants = data.pageProps.res.variants;
+                    const price = variants[0].price; // Extract the price from the first variant
 
-                        const priceElement = document.createElement('p');
-                        priceElement.className = 'price';
-                        priceElement.textContent = `Price: Rs ${price}`;
-                        container.appendChild(priceElement);
-                        
-                        const sizeVariantsList = document.createElement('ul');
-                        sizeVariantsList.className = 'size-variants';
-                        variants.forEach(variant => {
-                            if (variant.option_name && variant.quantity !== undefined) {
-                                const listItem = document.createElement('li');
-                                listItem.textContent = `${variant.option_name}: ${variant.quantity}`;
-                                
-                                // Apply class based on quantity
-                                if (variant.quantity === 0) {
-                                    listItem.classList.add('out-of-stock');
-                                }
-                                
-                                sizeVariantsList.appendChild(listItem);
+                    // Create and update HTML content dynamically
+                    const container = document.createElement('div');
+                    container.className = 'product-card';
+
+                    const titleElement = document.createElement('h2');
+                    titleElement.textContent = title;
+                    container.appendChild(titleElement);
+
+                    const imageElement = document.createElement('img');
+                    imageElement.src = image;
+                    imageElement.alt = title;
+                    container.appendChild(imageElement);
+
+                    const priceElement = document.createElement('p');
+                    priceElement.className = 'price';
+                    priceElement.textContent = `Price: Rs ${price}`;
+                    container.appendChild(priceElement);
+
+                    const sizeVariantsList = document.createElement('ul');
+                    sizeVariantsList.className = 'size-variants';
+                    variants.forEach(variant => {
+                        if (variant.option_name && variant.quantity !== undefined) {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = `${variant.option_name}: ${variant.quantity}`;
+
+                            // Apply class based on quantity
+                            if (variant.quantity === 0) {
+                                listItem.classList.add('out-of-stock');
                             }
-                        });
-                        container.appendChild(sizeVariantsList);
 
-                        document.getElementById('products').appendChild(container);
-                    })
-                    .catch(error => {
-                        console.error('Error fetching product data:', error);
+                            sizeVariantsList.appendChild(listItem);
+                        }
                     });
-            });
+                    container.appendChild(sizeVariantsList);
+
+                    document.getElementById('products').appendChild(container);
+                } catch (error) {
+                    console.error(`Error processing ${slug}:`, error);
+                }
+
+                // Introduce a slight delay between requests
+                await new Promise(resolve => setTimeout(resolve, 100)); // 500ms delay
+            }
         }
 
         // Fetch product data when the page loads
