@@ -21,21 +21,41 @@
         .input-section {
             flex: 1;
             padding-right: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        textarea {
+            width: 100%;
+            height: 48%;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
         }
         .output-section {
             flex: 2;
             padding-left: 20px;
             border-left: 2px solid #ddd;
+            display: flex;
+            flex-direction: column;
+        }
+        .output-subsection {
+            margin-bottom: 20px;
+        }
+        .toggle-output {
+            display: flex;
+            flex-wrap: wrap; /* Allows wrapping if needed */
+            gap: 10px; /* Space between items */
+            margin-bottom: 20px;
+        }
+        .extract-output {
             column-count: 3; /* Number of columns */
             column-gap: 30px; /* Gap between columns */
         }
-        textarea {
-            width: 100%;
-            height: 100%;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            resize: none;
+        .separator {
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 20px;
         }
         .output-item {
             font-size: 14px;
@@ -47,38 +67,68 @@
     <div class="container">
         <div class="input-section">
             <textarea id="inputText" placeholder="Paste your text here..."></textarea>
+            <textarea id="toggleText" placeholder="Paste your true/false values here..."></textarea>
         </div>
-        <div class="output-section" id="output"></div>
+        <div class="output-section">
+            <div id="toggleOutput" class="toggle-output"></div>
+            <div class="separator"></div>
+            <div id="extractOutput" class="extract-output"></div>
+        </div>
     </div>
 
     <script>
-        function extractTrueFalse() {
-            const inputText = document.getElementById('inputText').value;
-            const regex = /"(\w+)"\s*:\s*(true|false|"true"|"false")/gi;
-            let match;
-            const results = new Set();
+    function extractTrueFalse() {
+        const inputText = document.getElementById('inputText').value;
+        const regex = /"(\w+)"\s*:\s*(true|false|"true"|"false")/gi;
+        let match;
+        const results = new Set();
 
-            while ((match = regex.exec(inputText)) !== null) {
-                results.add(`${match[1]}: ${match[2]}`);
-            }
-
-            const sortedResults = Array.from(results).sort();
-
-            const outputDiv = document.getElementById('output');
-            outputDiv.innerHTML = '';
-            if (sortedResults.length > 0) {
-                sortedResults.forEach(result => {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'output-item';
-                    itemDiv.textContent = result;
-                    outputDiv.appendChild(itemDiv);
-                });
-            } else {
-                outputDiv.innerHTML = `<strong>No true/false values found.</strong>`;
-            }
+        while ((match = regex.exec(inputText)) !== null) {
+            results.add(`${match[1]}: ${match[2]}`);
         }
 
-        document.getElementById('inputText').addEventListener('input', extractTrueFalse);
-    </script>
+        const sortedResults = Array.from(results).sort();
+
+        const extractOutputDiv = document.getElementById('extractOutput');
+        extractOutputDiv.innerHTML = '';
+        if (sortedResults.length > 0) {
+            sortedResults.forEach(result => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'output-item';
+                itemDiv.textContent = result;
+                extractOutputDiv.appendChild(itemDiv);
+            });
+        } else {
+            extractOutputDiv.innerHTML = `<strong>No true/false values found.</strong>`;
+        }
+    }
+
+    function toggleTrueFalse() {
+        const toggleText = document.getElementById('toggleText').value;
+        const lines = toggleText.split('\n');
+        const toggledResults = lines.map(line => {
+            const [key, value] = line.split(':').map(item => item.trim());
+            if (value === 'true' || value === '"true"') {
+                return `${key}: false`;
+            } else if (value === 'false' || value === '"false"') {
+                return `${key}: true`;
+            }
+            return line; // If no valid true/false value, return the original line
+        });
+        const toggleOutputDiv = document.getElementById('toggleOutput');
+        toggleOutputDiv.innerHTML = '';
+        if (toggledResults.length > 0) {
+            toggleOutputDiv.innerHTML = toggledResults.join(' | ');
+        } else {
+            toggleOutputDiv.innerHTML = `<strong>No toggle values found.</strong>`;
+        }
+    }
+
+    document.getElementById('inputText').addEventListener('input', () => {
+        extractTrueFalse();
+        toggleTrueFalse();
+    });
+    document.getElementById('toggleText').addEventListener('input', toggleTrueFalse);
+</script>
 </body>
 </html>
