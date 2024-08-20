@@ -15,7 +15,7 @@
             background-color: #f4f4f4;
         }
         .container {
-            max-width: 500px;
+            max-width: 800px;
             width: 100%;
             padding: 20px;
             background-color: #fff;
@@ -24,26 +24,13 @@
         }
         textarea {
             width: 100%;
-            height: 150px;
+            height: 300px;
             margin-bottom: 20px;
             padding: 10px;
             font-size: 16px;
             border-radius: 5px;
             border: 1px solid #ccc;
             resize: none;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: #fff;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
         }
         .output {
             margin-top: 20px;
@@ -55,7 +42,6 @@
     <div class="container">
         <h2>True/False Word Extractor</h2>
         <textarea id="inputText" placeholder="Paste your text here..."></textarea>
-        <button onclick="extractTrueFalse()">Extract</button>
         <div class="output" id="output"></div>
     </div>
 
@@ -77,6 +63,8 @@
                 outputDiv.innerHTML = `<strong>No true/false values found.</strong>`;
             }
         }
+
+        document.getElementById('inputText').addEventListener('input', extractTrueFalse);
     </script>
 </body>
 </html>
