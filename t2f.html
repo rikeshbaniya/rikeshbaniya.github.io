@@ -79,15 +79,12 @@
     <script>
         function extractTrueFalse() {
             const inputText = document.getElementById('inputText').value;
-            const regex = /"?\w+"?\s*:\s*(true|false|"true"|"false")/gi;
+            const regex = /"(\w+)"\s*:\s*(true|false|"true"|"false")/gi;
             let match;
             const results = new Set();
 
             while ((match = regex.exec(inputText)) !== null) {
-                // Preserve quotes if they exist
-                const key = match[1];
-                const value = match[2];
-                results.add(`${key}: ${value}`);
+                results.add(`${match[1]}: ${match[2]}`);
             }
 
             const sortedResults = Array.from(results).sort();
@@ -108,26 +105,34 @@
 
         function toggleTrueFalse() {
             const toggleText = document.getElementById('toggleText').value;
-            const lines = toggleText.split('|'); // Split by | instead of \n
+            const lines = toggleText.split('\n');
             const toggledResults = lines.map(line => {
                 const [key, value] = line.split(':').map(item => item.trim());
                 if (value === 'true' || value === '"true"') {
-                    return `${key}:false`; // Remove space
+                    return `${key}: false`;
                 } else if (value === 'false' || value === '"false"') {
-                    return `${key}:true`; // Remove space
+                    return `${key}: true`;
                 }
                 return line; // If no valid true/false value, return the original line
             });
             const toggleOutputDiv = document.getElementById('toggleOutput');
             toggleOutputDiv.innerHTML = '';
             if (toggledResults.length > 0) {
-                toggleOutputDiv.innerHTML = toggledResults.join('|'); // Remove spaces between items
+                toggledResults.forEach(result => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'output-item';
+                    itemDiv.textContent = result;
+                    toggleOutputDiv.appendChild(itemDiv);
+                });
             } else {
                 toggleOutputDiv.innerHTML = `<strong>No toggle values found.</strong>`;
             }
         }
 
-        document.getElementById('inputText').addEventListener('input', extractTrueFalse);
+        document.getElementById('inputText').addEventListener('input', () => {
+            extractTrueFalse();
+            toggleTrueFalse();
+        });
         document.getElementById('toggleText').addEventListener('input', toggleTrueFalse);
     </script>
 </body>
