@@ -62,7 +62,7 @@
     <script>
         function extractTrueFalse() {
             const inputText = document.getElementById('inputText').value;
-            const regex = /(\w+)\s*:\s*(true|false|"true"|"false")/gi;
+            const regex = /"(\w+)"\s*:\s*(true|false|"true"|"false")/gi;
             let match;
             const results = [];
 
