@@ -8,7 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            justify-content center;
             align-items: center;
             height: 100vh;
             margin: 0;
@@ -50,15 +50,17 @@
             const inputText = document.getElementById('inputText').value;
             const regex = /"(\w+)"\s*:\s*(true|false|"true"|"false")/gi;
             let match;
-            const results = [];
+            const results = new Set();
 
             while ((match = regex.exec(inputText)) !== null) {
-                results.push(`${match[1]}: ${match[2]}`);
+                results.add(`${match[1]}: ${match[2]}`);
             }
 
+            const sortedResults = Array.from(results).sort();
+
             const outputDiv = document.getElementById('output');
-            if (results.length > 0) {
-                outputDiv.innerHTML = `<strong>Extracted Values:</strong><br>${results.join('<br>')}`;
+            if (sortedResults.length > 0) {
+                outputDiv.innerHTML = `<strong>Extracted Values:</strong><br>${sortedResults.join('<br>')}`;
             } else {
                 outputDiv.innerHTML = `<strong>No true/false values found.</strong>`;
             }
