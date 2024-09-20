@@ -68,9 +68,7 @@
 
         function copyToClipboard() {
             const outputText = document.getElementById("encodedOutput").textContent;
-            navigator.clipboard.writeText(outputText).then(() => {
-                alert("Encoded URL copied to clipboard!");
-            });
+            navigator.clipboard.writeText(outputText);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
