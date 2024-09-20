@@ -30,6 +30,7 @@
             border-radius: 5px;
             border: 1px solid #ccc;
             resize: none;
+            color: #888; /* Placeholder color */
         }
         button {
             padding: 10px 20px;
@@ -83,7 +84,7 @@
 <body>
     <div class="container">
         <h2>URL Encoder</h2>
-        <textarea id="jsonInput" placeholder="Paste your JSON here..."></textarea>
+        <textarea id="jsonInput" placeholder='{"step_name": "", "nonce_code": "XXXXXXXX", "user_id": "UIDXXXX", "cni": "CNIXXXX", "is_stateless": false, "challenge_type_enum": "UNKNOWN", "present_as_modal": false}'></textarea>
         <br>
         <button onclick="encodeURL()">Encode JSON</button>
         <h3>Encoded URL</h3>
