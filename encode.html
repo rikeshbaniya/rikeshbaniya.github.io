@@ -4,44 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Custom URL Encoder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #encodedOutput {
+            word-break: break-all;
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: left;
+        }
+    </style>
     <script>
         function encodeURL() {
-            // Get JSON input from the textarea
             const input = document.getElementById("jsonInput").value;
-
             try {
-                // Parse the input to ensure it's valid JSON
-                JSON.parse(input);
-
-                // URL encode and replace %20 with +
+                JSON.parse(input); // Validate JSON
                 let encodedURL = encodeURIComponent(input).replace(/%20/g, '+');
-
-                // Output the result
                 document.getElementById("encodedOutput").textContent = encodedURL;
             } catch (e) {
                 document.getElementById("encodedOutput").textContent = "Invalid JSON";
             }
         }
+
+        function copyToClipboard() {
+            const outputText = document.getElementById("encodedOutput").textContent;
+            navigator.clipboard.writeText(outputText).then(() => {
+                alert("Encoded URL copied to clipboard!");
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputField = document.getElementById("jsonInput");
+            inputField.addEventListener("paste", () => {
+                setTimeout(encodeURL, 100); // Wait for the paste to complete
+            });
+        });
     </script>
 </head>
 <body>
-    <h2>URL Encoder</h2>
-    
-    <textarea id="jsonInput" rows="10" cols="50">
-{
-    "step_name": "",
-    "nonce_code": "XXXXXXXX",
-    "user_id": "UIDXXXX",
-    "cni": "CNIXXXX",
-    "is_stateless": false,
-    "challenge_type_enum": "UNKNOWN",
-    "present_as_modal": false
-}
-    </textarea>
-    <br>
-    <button onclick="encodeURL()">Encode JSON</button>
-
-    <h3>Encoded URL</h3>
-    <p id="encodedOutput"></p>
+    <div class="container">
+        <h2>URL Encoder</h2>
+        <textarea id="jsonInput" placeholder="Paste your JSON here..."></textarea>
+        <br>
+        <button onclick="encodeURL()">Encode JSON</button>
+        <h3>Encoded URL</h3>
+        <div id="encodedOutput"></div>
+        <button onclick="copyToClipboard()">Copy to Clipboard</button>
+    </div>
 </body>
 </html>
