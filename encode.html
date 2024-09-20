@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom URL Encoder</title>
+    <script>
+        function encodeURL() {
+            // Get JSON input from the textarea
+            const input = document.getElementById("jsonInput").value;
+
+            try {
+                // Parse the input to ensure it's valid JSON
+                JSON.parse(input);
+
+                // URL encode and replace %20 with +
+                let encodedURL = encodeURIComponent(input).replace(/%20/g, '+');
+
+                // Output the result
+                document.getElementById("encodedOutput").textContent = encodedURL;
+            } catch (e) {
+                document.getElementById("encodedOutput").textContent = "Invalid JSON";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>URL Encoder</h2>
+    
+    <textarea id="jsonInput" rows="10" cols="50">
+{
+    "step_name": "",
+    "nonce_code": "XXXXXXXX",
+    "user_id": "UIDXXXX",
+    "cni": "CNIXXXX",
+    "is_stateless": false,
+    "challenge_type_enum": "UNKNOWN",
+    "present_as_modal": false
+}
+    </textarea>
+    <br>
+    <button onclick="encodeURL()">Encode JSON</button>
+
+    <h3>Encoded URL</h3>
+    <p id="encodedOutput"></p>
+</body>
+</html>
