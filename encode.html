@@ -32,6 +32,15 @@
             resize: none;
             color: #000; /* Text color */
         }
+        #encodedOutput {
+            word-break: break-all;
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: left;
+        }
         button {
             padding: 10px 20px;
             background-color: #007bff;
@@ -43,15 +52,6 @@
         }
         button:hover {
             background-color: #0056b3;
-        }
-        #encodedOutput {
-            word-break: break-all;
-            background-color: #f4f4f4;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin: 10px 0;
-            text-align: left;
         }
     </style>
     <script>
@@ -75,6 +75,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const inputField = document.getElementById("jsonInput");
+            inputField.addEventListener("input", encodeURL); // Automatically encode on input change
             inputField.addEventListener("paste", () => {
                 setTimeout(encodeURL, 100); // Wait for the paste to complete
             });
@@ -85,8 +86,6 @@
     <div class="container">
         <h2>URL Encoder</h2>
         <textarea id="jsonInput">{"step_name": "", "nonce_code": "XXXXXXXX", "user_id": "UIDXXXX", "cni": "CNIXXXX", "is_stateless": false, "challenge_type_enum": "UNKNOWN", "present_as_modal": false}</textarea>
-        <br>
-        <button onclick="encodeURL()">Encode JSON</button>
         <h3>Encoded URL</h3>
         <div id="encodedOutput"></div>
         <button onclick="copyToClipboard()">Copy to Clipboard</button>
