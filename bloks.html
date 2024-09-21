@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instagram Bloks Renderer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+    }
+    textarea, #output {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    textarea {
+      height: 200px;
+    }
+    #renderButton {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    #renderButton:hover {
+      background-color: #0056b3;
+    }
+    #output {
+      background-color: white;
+      border: 1px solid #ccc;
+      min-height: 200px;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Instagram Bloks Code Renderer</h1>
+  
+  <textarea id="bloksInput" placeholder="Enter Instagram Bloks JSON code here..."></textarea>
+  
+  <button id="renderButton">Render Bloks Code</button>
+  
+  <h3>Output:</h3>
+  <div id="output"></div>
+
+  <script>
+    const bloksInput = document.getElementById('bloksInput');
+    const outputDiv = document.getElementById('output');
+    const renderButton = document.getElementById('renderButton');
+
+    // Function to render the Bloks code
+    function renderBloks(bloks, parent) {
+      let element;
+
+      if (bloks.type === 'button') {
+        element = document.createElement('button');
+        element.innerText = bloks.props.label || 'Button';
+        element.style.padding = '10px 20px';
+        element.style.margin = '5px';
+        element.style.backgroundColor = '#007bff';
+        element.style.color = '#fff';
+        element.style.border = 'none';
+        element.style.cursor = 'pointer';
+      } else if (bloks.type === 'text') {
+        element = document.createElement('p');
+        element.innerText = bloks.props.content || 'Text Content';
+        element.style.margin = '5px';
+      }
+
+      parent.appendChild(element);
+    }
+
+    // Event listener for the render button
+    renderButton.addEventListener('click', function() {
+      // Clear the previous output
+      outputDiv.innerHTML = '';
+
+      // Get the Bloks JSON input from the textarea
+      const bloksJson = bloksInput.value;
+
+      try {
+        // Parse the input JSON
+        const bloksObject = JSON.parse(bloksJson);
+
+        // Render the Bloks code in the output div
+        renderBloks(bloksObject, outputDiv);
+      } catch (error) {
+        // Show an error message if the JSON is invalid
+        outputDiv.innerText = 'Invalid JSON input!';
+      }
+    });
+  </script>
+
+</body>
+</html>
