@@ -20,6 +20,7 @@
             padding: 10px;
             border: 1px solid #ddd;
             margin-top: 20px;
+            white-space: pre-wrap;
         }
     </style>
 </head>
@@ -33,12 +34,16 @@
     <script>
         function extractValues() {
             const inputText = document.getElementById("inputField").value;
-            const regex = /Did you mean\s+\"(.*?)\"/g;
-            const matches = [...inputText.matchAll(regex)];
-            const results = matches.map(match => match[1]);
-            document.getElementById("output").innerHTML = results.length 
-                ? results.join(", ") 
-                : "No values found.";
+            const regex = /Did you mean\s+(\"[^\"]+\"(?:,\s*\"[^\"]+\")*)/;
+            const match = inputText.match(regex);
+
+            if (match) {
+                // Split the matched group by commas and clean up the quotes
+                const results = match[1].split(/,\s*/).map(value => value.replace(/"/g, ""));
+                document.getElementById("output").textContent = results.join("\n");
+            } else {
+                document.getElementById("output").textContent = "No values found.";
+            }
         }
     </script>
 </body>
