@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extract Values</title>
+    <title>Text Processor</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,34 +16,49 @@
             font-size: 14px;
         }
         #output {
-            background-color: #f4f4f4;
+            background-color: #f9f9f9;
             padding: 10px;
             border: 1px solid #ddd;
             margin-top: 20px;
             white-space: pre-wrap;
+            font-family: monospace;
         }
     </style>
 </head>
 <body>
-    <h2>Extract Values Between "Did you mean"</h2>
+    <h2>Text Processor</h2>
     <textarea id="inputField" placeholder="Paste your text here..."></textarea>
-    <button onclick="extractValues()">Extract</button>
-    <h3>Extracted Values:</h3>
+    <button onclick="processText()">Process</button>
+    <h3>Processed Output:</h3>
     <div id="output"></div>
 
     <script>
-        function extractValues() {
+        function processText() {
             const inputText = document.getElementById("inputField").value;
-            const regex = /Did you mean\s+(\"[^\"]+\"(?:,\s*\"[^\"]+\")*)/;
-            const match = inputText.match(regex);
 
-            if (match) {
-                // Split the matched group by commas and clean up the quotes
-                const results = match[1].split(/,\s*/).map(value => value.replace(/"/g, ""));
-                document.getElementById("output").textContent = results.join("\n");
-            } else {
-                document.getElementById("output").textContent = "No values found.";
+            // Step 1: Extract the part starting with 'Did you mean' up to the next '?'
+            const grepRegex = /Did you mean[^?]*\?/g;
+            const matches = inputText.match(grepRegex);
+
+            if (!matches) {
+                document.getElementById("output").textContent = "No matches found.";
+                return;
             }
+
+            // Step 2: Replace spaces, quotes, and backslashes with newlines
+            const processedText = matches
+                .join("\n") // Combine matches into a single string for further processing
+                .replace(/ /g, "\n") // Replace spaces with newlines
+                .replace(/"/g, "\n") // Replace double quotes with newlines
+                .replace(/\\/g, "\n"); // Replace backslashes with newlines
+
+            // Step 3: Split into lines, sort them uniquely, and remove empty lines
+            const sortedUniqueLines = [...new Set(processedText.split("\n"))]
+                .filter(line => line.trim() !== "") // Remove empty lines
+                .sort(); // Sort alphabetically
+
+            // Step 4: Display the result
+            document.getElementById("output").textContent = sortedUniqueLines.join("\n");
         }
     </script>
 </body>
