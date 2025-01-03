@@ -28,7 +28,6 @@
 <body>
     <h2>Text Processor</h2>
     <textarea id="inputField" placeholder="Paste your text here..."></textarea>
-    <button onclick="processText()">Process</button>
     <h3>Processed Output:</h3>
     <div id="output"></div>
 
@@ -60,6 +59,9 @@
             // Step 4: Display the result
             document.getElementById("output").textContent = sortedUniqueLines.join("\n");
         }
+
+        // Add an event listener for the paste event
+        document.getElementById("inputField").addEventListener("input", processText);
     </script>
 </body>
 </html>
