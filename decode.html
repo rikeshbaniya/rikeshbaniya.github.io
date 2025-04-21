@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>URL Decoder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    textarea, input {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .output {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>URL Decoder</h2>
+
+  <textarea id="input" rows="6" placeholder="Paste your encoded URL here..."></textarea>
+
+  <div class="output" id="output"></div>
+
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+
+    function decodeUrl(raw) {
+      try {
+        // Handle double encoding (e.g. \u0025 -> %)
+        let decoded = raw.replace(/\\u0025/g, '%')
+                         .replace(/\\\//g, '/')
+                         .replace(/\\u([0-9A-F]{4})/gi, (_, g1) => String.fromCharCode(parseInt(g1, 16)));
+
+        return decodeURIComponent(decoded);
+      } catch (e) {
+        return 'Error decoding URL';
+      }
+    }
+
+    input.addEventListener('input', () => {
+      const decoded = decodeUrl(input.value);
+      output.textContent = decoded;
+    });
+  </script>
+
+</body>
+</html>
