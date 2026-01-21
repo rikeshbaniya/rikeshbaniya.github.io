@@ -1,144 +1,624 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Find & Replace Tool</title>
-  <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #0f0f0f;
-      color: #e5e5e5;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-    }
-    h1 {
-      font-size: 20px;
-      margin-bottom: 12px;
-      font-weight: 500;
-    }
-    textarea, input {
-      width: 100%;
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      color: #e5e5e5;
-      padding: 10px;
-      border-radius: 6px;
-      box-sizing: border-box;
-    }
-    textarea {
-      min-height: 140px;
-      resize: vertical;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .pair {
-      display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-    button {
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-    }
-    button.secondary {
-      background: #2a2a2a;
-    }
-    button.danger {
-      background: #7f1d1d;
-    }
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 12px;
-    }
-    label {
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find & Replace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 300;
+            margin-bottom: 30px;
+            color: #1a1a1a;
+        }
+
+        .text-areas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .text-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .label-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .char-count {
+            font-size: 12px;
+            color: #999;
+            font-weight: 400;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .controls {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .controls-header h2 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .auto-replace {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #ddd;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle.active {
+            background: #333;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle.active .toggle-slider {
+            transform: translateX(20px);
+        }
+
+        .auto-replace span {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .rules {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .rule {
+            display: grid;
+            grid-template-columns: 1fr 1fr 40px;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .rule input {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.2s;
+        }
+
+        .rule input:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .rule input::placeholder {
+            color: #aaa;
+        }
+
+        .delete-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #fee;
+            border-color: #fcc;
+            color: #c00;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .buttons-left {
+            display: flex;
+            gap: 12px;
+        }
+
+        .buttons-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .separator {
+            color: #ddd;
+            font-size: 20px;
+            margin: 0 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .bottom-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background: #f9f9f9;
+            border-color: #999;
+        }
+
+        .btn-primary {
+            background: #333;
+            color: white;
+            border-color: #333;
+        }
+
+        .btn-primary:hover {
+            background: #555;
+            border-color: #555;
+        }
+
+        .advanced-section {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .control-box {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .control-box:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            margin-bottom: 12px;
+            user-select: none;
+        }
+
+        .section-header h3 {
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .control-box-header {
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        .expand-icon {
+            font-size: 12px;
+            color: #999;
+            transition: transform 0.2s;
+        }
+
+        .expand-icon.expanded {
+            transform: rotate(90deg);
+        }
+
+        .regex-content {
+            display: none;
+        }
+
+        .regex-content.show {
+            display: block;
+        }
+
+        .regex-rule {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .regex-rule input {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.2s;
+        }
+
+        .regex-rule input:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .regex-rule input::placeholder {
+            color: #aaa;
+        }
+
+        .regex-label {
+            width: 40px;
+            height: 36px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #999;
+            align-self: flex-start;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .option-btn {
+            padding: 10px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            background: #f9f9f9;
+            border-color: #999;
+        }
+
+        .option-btn:active {
+            background: #eee;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Find & Replace</h1>
+    <div class="container">
+        <h1>Find & Replace</h1>
+        
+        <div class="text-areas">
+            <div class="text-box">
+                <div class="label-wrapper">
+                    <label>Input</label>
+                    <span class="char-count" id="inputCount">0 lines</span>
+                </div>
+                <textarea id="input" placeholder="Enter your text here..."></textarea>
+            </div>
+            <div class="text-box">
+                <div class="label-wrapper">
+                    <label>Output</label>
+                    <span class="char-count" id="outputCount">0 lines</span>
+                </div>
+                <textarea id="output" placeholder="Output will appear here..." readonly></textarea>
+            </div>
+        </div>
 
-    <div class="grid">
-      <textarea id="input" placeholder="Input text"></textarea>
-      <textarea id="output" placeholder="Output" readonly></textarea>
+        <div class="control-box">
+            <div class="controls-header">
+                <h2 class="control-box-header">Find & Replace Rules</h2>
+                <div class="auto-replace">
+                    <span>Auto Replace</span>
+                    <div class="toggle active" id="autoToggle">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rules" id="rules"></div>
+
+            <div class="buttons">
+                <div class="buttons-left">
+                    <button class="btn" id="addRule">+ Add Rule</button>
+                    <button class="btn btn-primary" id="replaceBtn">Replace</button>
+                </div>
+                <div class="buttons-right">
+                    <button class="btn" id="sortOutput">Sort Output</button>
+                    <button class="btn" id="removeDuplicates">Remove Duplicates</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-controls">
+            <div class="control-box">
+                <h2 class="control-box-header">RegEx Options</h2>
+                <div class="regex-rule">
+                    <input type="text" id="regexFind" placeholder="Find...">
+                    <input type="text" id="regexReplace" placeholder="Replace with...">
+                    <div class="regex-label">/g</div>
+                </div>
+                <button class="btn btn-primary" id="applyRegex">Apply RegEx</button>
+            </div>
+
+            <div class="control-box">
+                <h2 class="control-box-header">Text Tools</h2>
+                <div class="options-grid">
+                    <button class="option-btn" id="removeLineBreaks">Remove Line Breaks</button>
+                    <button class="option-btn" id="removeEmptyLines">Remove Empty Lines</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="pairs"></div>
+    <script>
+        let rules = [
+            { id: 1, find: '', replace: '' },
+            { id: 2, find: '', replace: '' },
+            { id: 3, find: '', replace: '' }
+        ];
+        let autoReplace = true;
+        let nextId = 4;
 
-    <div class="controls">
-      <button onclick="addPair()">+ Add rule</button>
-      <button class="secondary" onclick="replaceText()">Replace</button>
-      <label>
-        <input type="checkbox" id="auto" /> Auto replace
-      </label>
-    </div>
-  </div>
+        const input = document.getElementById('input');
+        const output = document.getElementById('output');
+        const inputCount = document.getElementById('inputCount');
+        const outputCount = document.getElementById('outputCount');
+        const rulesContainer = document.getElementById('rules');
+        const autoToggle = document.getElementById('autoToggle');
+        const replaceBtn = document.getElementById('replaceBtn');
+        const addRuleBtn = document.getElementById('addRule');
+        const regexFind = document.getElementById('regexFind');
+        const regexReplace = document.getElementById('regexReplace');
+        const applyRegexBtn = document.getElementById('applyRegex');
+        const removeLineBreaksBtn = document.getElementById('removeLineBreaks');
+        const removeEmptyLinesBtn = document.getElementById('removeEmptyLines');
+        const sortOutputBtn = document.getElementById('sortOutput');
+        const removeDuplicatesBtn = document.getElementById('removeDuplicates');
 
-  <script>
-    const pairsEl = document.getElementById('pairs');
-    const inputEl = document.getElementById('input');
-    const outputEl = document.getElementById('output');
-    const autoEl = document.getElementById('auto');
-
-    function addPair(find = '', replace = '') {
-      const row = document.createElement('div');
-      row.className = 'pair';
-      row.innerHTML = `
-        <input placeholder="Find" value="${find}" />
-        <input placeholder="Replace" value="${replace}" />
-        <button class="danger">✕</button>
-      `;
-
-      row.querySelector('button').onclick = () => {
-        row.remove();
-        if (autoEl.checked) replaceText();
-      };
-
-      row.querySelectorAll('input').forEach(i => {
-        i.oninput = () => autoEl.checked && replaceText();
-      });
-
-      pairsEl.appendChild(row);
-    }
-
-    function replaceText() {
-      let text = inputEl.value;
-      document.querySelectorAll('.pair').forEach(row => {
-        const [find, replace] = row.querySelectorAll('input');
-        if (find.value) {
-          text = text.split(find.value).join(replace.value);
+        function updateCharCount() {
+            const inputLines = input.value ? input.value.split('\n').length : 0;
+            const outputLines = output.value ? output.value.split('\n').length : 0;
+            inputCount.textContent = `${inputLines} ${inputLines === 1 ? 'line' : 'lines'}`;
+            outputCount.textContent = `${outputLines} ${outputLines === 1 ? 'line' : 'lines'}`;
         }
-      });
-      outputEl.value = text;
-    }
 
-    inputEl.oninput = () => autoEl.checked && replaceText();
+        function renderRules() {
+            rulesContainer.innerHTML = rules.map(rule => `
+                <div class="rule">
+                    <input 
+                        type="text" 
+                        placeholder="Find..." 
+                        value="${rule.find}"
+                        data-id="${rule.id}"
+                        data-field="find"
+                    >
+                    <input 
+                        type="text" 
+                        placeholder="Replace with..." 
+                        value="${rule.replace}"
+                        data-id="${rule.id}"
+                        data-field="replace"
+                    >
+                    <button class="delete-btn" data-id="${rule.id}">✕</button>
+                </div>
+            `).join('');
 
-    // default 3 rules
-    addPair();
-    addPair();
-    addPair();
-  </script>
+            // Add event listeners
+            document.querySelectorAll('.rule input').forEach(input => {
+                input.addEventListener('input', handleRuleChange);
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', handleDelete);
+            });
+        }
+
+        function handleRuleChange(e) {
+            const id = parseInt(e.target.dataset.id);
+            const field = e.target.dataset.field;
+            const value = e.target.value;
+
+            rules = rules.map(rule => 
+                rule.id === id ? { ...rule, [field]: value } : rule
+            );
+
+            if (autoReplace) {
+                performReplace();
+            }
+        }
+
+        function handleDelete(e) {
+            const id = parseInt(e.currentTarget.dataset.id);
+            if (rules.length > 1) {
+                rules = rules.filter(rule => rule.id !== id);
+                renderRules();
+                if (autoReplace) {
+                    performReplace();
+                }
+            }
+        }
+
+        function performReplace() {
+            let result = input.value;
+            rules.forEach(rule => {
+                if (rule.find) {
+                    result = result.split(rule.find).join(rule.replace);
+                }
+            });
+            output.value = result;
+            updateCharCount();
+        }
+
+        autoToggle.addEventListener('click', () => {
+            autoReplace = !autoReplace;
+            autoToggle.classList.toggle('active');
+            if (autoReplace) {
+                performReplace();
+            }
+        });
+
+        addRuleBtn.addEventListener('click', () => {
+            rules.push({ id: nextId++, find: '', replace: '' });
+            renderRules();
+        });
+
+        replaceBtn.addEventListener('click', performReplace);
+
+        input.addEventListener('input', () => {
+            updateCharCount();
+            if (autoReplace) {
+                performReplace();
+            }
+        });
+
+        output.addEventListener('input', updateCharCount);
+
+        // RegEx - Apply RegEx
+        applyRegexBtn.addEventListener('click', () => {
+            const pattern = regexFind.value;
+            const replacement = regexReplace.value;
+            
+            if (pattern) {
+                try {
+                    const regex = new RegExp(pattern, 'g');
+                    output.value = output.value.replace(regex, replacement);
+                    updateCharCount();
+                } catch (e) {
+                    alert('Invalid regular expression');
+                }
+            }
+        });
+
+        // Remove Line Breaks
+        removeLineBreaksBtn.addEventListener('click', () => {
+            output.value = output.value.replace(/\n/g, ' ').replace(/\s+/g, ' ');
+            updateCharCount();
+        });
+
+        // Remove Empty Lines
+        removeEmptyLinesBtn.addEventListener('click', () => {
+            output.value = output.value.split('\n').filter(line => line.trim() !== '').join('\n');
+            updateCharCount();
+        });
+
+        // Sort Output
+        sortOutputBtn.addEventListener('click', () => {
+            const lines = output.value.split('\n');
+            lines.sort();
+            output.value = lines.join('\n');
+            updateCharCount();
+        });
+
+        // Remove Duplicates
+        removeDuplicatesBtn.addEventListener('click', () => {
+            const lines = output.value.split('\n');
+            const unique = [...new Set(lines)];
+            output.value = unique.join('\n');
+            updateCharCount();
+        });
+
+        // Initial render
+        renderRules();
+        updateCharCount();
+    </script>
 </body>
 </html>
