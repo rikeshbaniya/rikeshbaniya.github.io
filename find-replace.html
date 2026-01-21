@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Find & Replace Tool</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f0f0f;
+      color: #e5e5e5;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+    textarea, input {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      color: #e5e5e5;
+      padding: 10px;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    button.secondary {
+      background: #2a2a2a;
+    }
+    button.danger {
+      background: #7f1d1d;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    label {
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Find & Replace</h1>
+
+    <div class="grid">
+      <textarea id="input" placeholder="Input text"></textarea>
+      <textarea id="output" placeholder="Output" readonly></textarea>
+    </div>
+
+    <div id="pairs"></div>
+
+    <div class="controls">
+      <button onclick="addPair()">+ Add rule</button>
+      <button class="secondary" onclick="replaceText()">Replace</button>
+      <label>
+        <input type="checkbox" id="auto" /> Auto replace
+      </label>
+    </div>
+  </div>
+
+  <script>
+    const pairsEl = document.getElementById('pairs');
+    const inputEl = document.getElementById('input');
+    const outputEl = document.getElementById('output');
+    const autoEl = document.getElementById('auto');
+
+    function addPair(find = '', replace = '') {
+      const row = document.createElement('div');
+      row.className = 'pair';
+      row.innerHTML = `
+        <input placeholder="Find" value="${find}" />
+        <input placeholder="Replace" value="${replace}" />
+        <button class="danger">✕</button>
+      `;
+
+      row.querySelector('button').onclick = () => {
+        row.remove();
+        if (autoEl.checked) replaceText();
+      };
+
+      row.querySelectorAll('input').forEach(i => {
+        i.oninput = () => autoEl.checked && replaceText();
+      });
+
+      pairsEl.appendChild(row);
+    }
+
+    function replaceText() {
+      let text = inputEl.value;
+      document.querySelectorAll('.pair').forEach(row => {
+        const [find, replace] = row.querySelectorAll('input');
+        if (find.value) {
+          text = text.split(find.value).join(replace.value);
+        }
+      });
+      outputEl.value = text;
+    }
+
+    inputEl.oninput = () => autoEl.checked && replaceText();
+
+    // default 3 rules
+    addPair();
+    addPair();
+    addPair();
+  </script>
+</body>
+</html>
