@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWK Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #c0c0c0;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #ffffff;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .command-section {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #ffffff;
+            padding: 0.75rem 1rem;
+            font-family: inherit;
+            font-size: 1rem;
+            border-radius: 4px;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .io-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .io-section {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .copy-btn {
+            background: #1a1a1a;
+            color: #c0c0c0;
+            border: 1px solid #555;
+            padding: 0.6rem 1.5rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .copy-btn:hover {
+            background: #333;
+            border-color: #777;
+        }
+
+        .copy-btn.copied {
+            background: #444;
+            color: #fff;
+            border-color: #666;
+        }
+
+        textarea {
+            flex: 1;
+            min-height: 400px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #c0c0c0;
+            padding: 1rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            border-radius: 4px;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        #output {
+            background: #151515;
+            color: #e0e0e0;
+        }
+
+        .error {
+            color: #999;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .io-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AWK</h1>
+        
+        <div class="command-section">
+            <label for="command">Command</label>
+            <input type="text" id="command" value="'{print $2}'">
+        </div>
+
+        <div class="io-container">
+            <div class="io-section">
+                <label for="input">Input</label>
+                <textarea id="input" placeholder="Enter your input text here..."></textarea>
+            </div>
+
+            <div class="io-section">
+                <div class="label-row">
+                    <label for="output">Output</label>
+                    <button class="copy-btn" id="copyBtn">Copy</button>
+                </div>
+                <textarea id="output" readonly placeholder="Output will appear here..."></textarea>
+            </div>
+        </div>
+
+        <div id="error" class="error"></div>
+    </div>
+
+    <script>
+        function copyOutput() {
+            const output = document.getElementById('output').value;
+            const btn = document.getElementById('copyBtn');
+            
+            if (output) {
+                navigator.clipboard.writeText(output).then(() => {
+                    btn.textContent = 'Copied!';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.textContent = 'Copy';
+                        btn.classList.remove('copied');
+                    }, 1500);
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                });
+            }
+        }
+
+        document.getElementById('copyBtn').addEventListener('click', copyOutput);
+
+        function runAwk() {
+            const command = document.getElementById('command').value;
+            const input = document.getElementById('input').value;
+            const outputEl = document.getElementById('output');
+            const errorEl = document.getElementById('error');
+            
+            errorEl.textContent = '';
+            outputEl.value = '';
+
+            try {
+                // Parse AWK command
+                let awkCommand = command.trim();
+                if (awkCommand.startsWith("'") && awkCommand.endsWith("'")) {
+                    awkCommand = awkCommand.slice(1, -1);
+                }
+
+                // Split input into lines
+                const lines = input.split('\n');
+                const results = [];
+
+                // Simple AWK interpreter for basic commands
+                lines.forEach((line, lineNum) => {
+                    if (!line.trim()) return;
+                    
+                    const fields = line.split(/\s+/);
+                    const NF = fields.length;
+                    
+                    // Create field variables
+                    const fieldVars = { NF, NR: lineNum + 1 };
+                    fields.forEach((field, i) => {
+                        fieldVars[`$${i + 1}`] = field;
+                    });
+                    fieldVars['$0'] = line;
+
+                    // Simple pattern matching and print execution
+                    if (awkCommand.includes('print')) {
+                        let output = awkCommand.replace(/print\s+/, '');
+                        
+                        // Replace field references
+                        output = output.replace(/\$(\d+)/g, (match, num) => {
+                            return fieldVars[match] || '';
+                        });
+                        output = output.replace(/\$0/g, line);
+                        output = output.replace(/NF/g, NF);
+                        output = output.replace(/NR/g, lineNum + 1);
+                        
+                        // Remove quotes, braces, and semicolons
+                        output = output.replace(/["';{}]/g, '').trim();
+                        
+                        results.push(output);
+                    }
+                });
+
+                outputEl.value = results.join('\n');
+            } catch (e) {
+                errorEl.textContent = 'Error: ' + e.message;
+            }
+        }
+
+        // Execute on Enter or change in command field
+        document.getElementById('command').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') runAwk();
+        });
+        
+        let timeout;
+        document.getElementById('command').addEventListener('input', () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(runAwk, 300);
+        });
+
+        // Auto-execute when input changes (with debounce)
+        document.getElementById('input').addEventListener('input', () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(runAwk, 300);
+        });
+    </script>
+</body>
+</html>
